@@ -1,0 +1,43 @@
+def longest_zigzag_subsequence(sequence):
+    n = len(sequence)
+    dp_smaller = [1] * n
+    dp_larger = [1] * n
+    prev_smaller = [-1] * n
+    prev_larger = [-1] * n
+    max_length = 1
+    last_index = 0
+
+    for i in range(1, n):
+        for j in range(i):
+            if sequence[i] > sequence[j] and dp_smaller[i] < dp_larger[j] + 1:
+                dp_smaller[i] = dp_larger[j] + 1
+                prev_smaller[i] = j
+            elif sequence[i] < sequence[j] and dp_larger[i] < dp_smaller[j] + 1:
+                dp_larger[i] = dp_smaller[j] + 1
+                prev_larger[i] = j
+
+        if dp_smaller[i] > max_length:
+            max_length = dp_smaller[i]
+            last_index = i
+        if dp_larger[i] > max_length:
+            max_length = dp_larger[i]
+            last_index = i
+
+    longest_subsequence = []
+    current_index = last_index
+    while current_index >= 0:
+        if dp_smaller[current_index] > dp_larger[current_index]:
+            longest_subsequence.append(sequence[current_index])
+            current_index = prev_smaller[current_index]
+        else:
+            longest_subsequence.append(sequence[current_index])
+            current_index = prev_larger[current_index]
+
+    return longest_subsequence[::-1]
+
+if __name__ == "__main__":
+    input_sequence = input()
+    sequence = list(map(int, input_sequence.strip().split()))
+
+    result = longest_zigzag_subsequence(sequence)
+    print(" ".join(map(str, result)))
