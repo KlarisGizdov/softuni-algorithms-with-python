@@ -1,0 +1,45 @@
+def evaluate_expression(expr):
+    if 't' in expr:
+        return True
+    elif 'f' in expr:
+        return False
+    else:
+        return int(expr)
+
+def find_nested_expr(expr, start_index):
+    count = 0
+    for i in range(start_index, len(expr)):
+        if expr[i] == '?':
+            count += 1
+        elif expr[i] == ':':
+            count -= 1
+        if count == 0:
+            return i
+    return -1
+
+def resolve_expression(expression):
+    first_question_mark = expression.find('?')
+    if first_question_mark == -1:
+        return evaluate_expression(expression)
+
+    boolean_expr = expression[:first_question_mark]
+    nested_colon = find_nested_expr(expression, first_question_mark)
+    true_result_expr = expression[first_question_mark + 2: nested_colon]
+    false_result_expr = expression[nested_colon + 1:]
+
+    boolean_value = evaluate_expression(boolean_expr)
+
+    result_expr = true_result_expr if boolean_value else false_result_expr
+
+    if '?' in result_expr:
+        return resolve_expression(result_expr)
+
+    return evaluate_expression(result_expr)
+
+def main():
+    input_expr = input()
+    result = resolve_expression(input_expr.strip())
+    print(result)
+
+if __name__ == "__main__":
+    main()
