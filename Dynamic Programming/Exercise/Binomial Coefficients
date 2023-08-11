@@ -1,0 +1,21 @@
+def binomial_coefficient_memo(n, k, memo):
+    if k == 0 or k == n:
+        return 1
+
+    if (n, k) in memo:
+        return memo[(n, k)]
+
+    coefficient = binomial_coefficient_memo(n - 1, k - 1, memo) + binomial_coefficient_memo(n - 1, k, memo)
+    memo[(n, k)] = coefficient
+    return coefficient
+
+def binomial_coefficient(n, k):
+    memo = {}
+    return binomial_coefficient_memo(n, k, memo)
+
+if __name__ == "__main__":
+    n = int(input())
+    k = int(input())
+
+    result = binomial_coefficient(n, k)
+    print(f"{result}")
