@@ -1,0 +1,58 @@
+import heapq
+
+
+def find_shortest_path(graph, start, end, closed_roads):
+    distances = {city: float('inf') for city in graph}
+    distances[start] = 0
+    previous_city = {city: None for city in graph}
+    min_heap = [(0, start)]
+
+    while min_heap:
+        dist, current_city = heapq.heappop(min_heap)
+
+        if current_city == end:
+            break
+
+        if dist > distances[current_city]:
+            continue
+
+        for neighbor, edge_dist in graph[current_city]:
+            if (current_city, neighbor) in closed_roads or (neighbor, current_city) in closed_roads:
+                continue
+            new_dist = dist + edge_dist
+            if new_dist < distances[neighbor]:
+                distances[neighbor] = new_dist
+                previous_city[neighbor] = current_city
+                heapq.heappush(min_heap, (new_dist, neighbor))
+
+    path = []
+    while end:
+        path.append(end)
+        end = previous_city[end]
+    path.reverse()
+
+    return path, distances[path[-1]]
+
+
+num_roads = int(input())
+city_graph = {}
+for _ in range(num_roads):
+    city1, city2, distance = input().split(' - ')
+    distance = int(distance)
+    if city1 not in city_graph:
+        city_graph[city1] = []
+    if city2 not in city_graph:
+        city_graph[city2] = []
+    city_graph[city1].append((city2, distance))
+    city_graph[city2].append((city1, distance))
+
+closed_road_input = input()
+closed_road_list = [tuple(road.split('-')) for road in closed_road_input.split(',')]
+closed_roads = set(closed_road_list)
+
+starting_city = input()
+ending_city = input()
+
+optimal_route, total_distance = find_shortest_path(city_graph, starting_city, ending_city, closed_roads)
+print(' - '.join(optimal_route))
+print(total_distance)
